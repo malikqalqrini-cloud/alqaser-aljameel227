@@ -1,0 +1,1235 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>دفتر الحسابات</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@600;700;800&family=Tajawal:wght@400;500;700&family=IBM+Plex+Mono:wght@500;600&display=swap');
+
+:root{
+  --paper:#F7F3EA;
+  --ink:#16423C;
+  --ink-2:#1F5A50;
+  --gold:#C89A45;
+  --gold-dark:#A87C2F;
+  --card:#FFFFFF;
+  --border:#E4DDC9;
+  --text:#26241F;
+  --muted:#847C69;
+  --danger:#B3443A;
+  --success:#3F8358;
+  --info:#2E6C86;
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--text);
+  font-family:'Tajawal',sans-serif;
+  font-size:14.5px;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3{font-family:'Cairo',sans-serif;margin:0 0 4px;color:var(--ink)}
+p{margin:0}
+.muted{color:var(--muted)}
+.mono{font-family:'IBM Plex Mono',monospace;letter-spacing:.2px}
+.hint{font-size:12.5px;color:var(--muted);background:#FBF6E9;border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin:10px 0}
+
+/* ---------- Auth screens ---------- */
+.auth-wrap{
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  background:
+    linear-gradient(180deg, rgba(22,66,60,.04), transparent 40%),
+    repeating-linear-gradient(0deg, rgba(22,66,60,.035) 0px, rgba(22,66,60,.035) 1px, transparent 1px, transparent 34px),
+    var(--paper);
+  padding:24px;
+}
+.auth-card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:36px 32px;
+  width:100%;max-width:420px;
+  box-shadow:0 20px 50px -20px rgba(22,66,60,.25);
+  text-align:center;
+}
+.brand-mark{font-size:34px;margin-bottom:6px}
+.brand-logo{display:block;margin:0 auto 6px;object-fit:contain;border-radius:10px}
+.brand-logo.lg{max-width:96px;max-height:96px}
+.brand-logo.sm{max-width:34px;max-height:34px;border-radius:7px}
+.logo-row{display:flex;align-items:center;gap:14px}
+.logo-preview{width:64px;height:64px;object-fit:contain;border:1px solid var(--border);border-radius:10px;background:#FFFEFB}
+.logo-empty{display:flex;align-items:center;justify-content:center;font-size:10.5px;color:var(--muted);text-align:center;padding:4px}
+.logo-row-btns{display:flex;flex-direction:column;gap:6px;align-items:flex-start}
+.receipt-logo{display:block;margin:0 auto 8px;max-width:80px;max-height:80px;object-fit:contain}
+.auth-card h1{font-size:22px}
+.auth-card .field{text-align:right;margin-top:14px}
+.role-pick{display:flex;gap:10px;margin:18px 0}
+.role-btn{
+  flex:1;padding:14px 8px;border-radius:12px;border:2px solid var(--border);
+  background:#FCFAF4;font-family:'Cairo',sans-serif;font-weight:700;font-size:14px;
+  cursor:pointer;transition:.15s;
+}
+.role-btn:hover{border-color:var(--gold)}
+.role-btn.active{border-color:var(--ink-2);background:rgba(31,90,80,.08);color:var(--ink)}
+
+/* ---------- Form fields ---------- */
+.field{display:flex;flex-direction:column;gap:5px;margin-bottom:12px;text-align:right}
+.field label{font-size:12.5px;color:var(--muted);font-weight:500}
+input,select,textarea{
+  font-family:'Tajawal',sans-serif;font-size:14px;
+  padding:10px 12px;border:1.5px solid var(--border);border-radius:9px;
+  background:#FFFEFB;color:var(--text);outline:none;width:100%;
+}
+input:focus,select:focus,textarea:focus{border-color:var(--ink-2);box-shadow:0 0 0 3px rgba(31,90,80,.12)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0 14px}
+
+/* ---------- Buttons ---------- */
+.btn{
+  font-family:'Cairo',sans-serif;font-weight:700;font-size:13.5px;
+  border:none;border-radius:9px;padding:11px 18px;cursor:pointer;transition:.15s;
+  display:inline-flex;align-items:center;gap:6px;justify-content:center;
+}
+.btn-primary{background:var(--ink);color:#fff}
+.btn-primary:hover{background:var(--ink-2)}
+.btn-secondary{background:#EFE8D4;color:var(--ink)}
+.btn-secondary:hover{background:#E5DCC2}
+.btn-ghost{background:transparent;color:var(--ink);border:1.5px solid var(--border)}
+.btn-ghost:hover{border-color:var(--ink-2)}
+.btn-danger{background:var(--danger);color:#fff}
+.btn-danger:hover{background:#9A382F}
+.btn-block{width:100%}
+.btn-lg{padding:13px 26px;font-size:14.5px}
+.btn-link{background:none;border:none;color:var(--gold-dark);font-family:'Tajawal';font-size:12.5px;cursor:pointer;text-decoration:underline}
+.btn-icon{
+  background:#F2EEE1;border:1px solid var(--border);border-radius:7px;
+  width:30px;height:30px;cursor:pointer;font-size:13px;margin-inline-start:4px;
+}
+.btn-icon.danger{background:#F7E7E4}
+.btn-icon.success{background:#E6F1E9}
+.btn-icon:hover{filter:brightness(.96)}
+
+/* ---------- Shell / Sidebar ---------- */
+.shell{display:flex;min-height:100vh}
+.sidebar{
+  width:236px;flex:0 0 236px;background:var(--ink);color:#EFEADA;
+  display:flex;flex-direction:column;padding:20px 14px;
+}
+.side-brand{display:flex;align-items:center;gap:10px;padding:6px 6px 20px;border-bottom:1px solid rgba(255,255,255,.12);margin-bottom:14px}
+.side-brand-mark{font-size:24px}
+.side-brand-name{font-family:'Cairo',sans-serif;font-weight:800;font-size:14.5px;line-height:1.3}
+.side-brand-sub{font-size:11px;color:#B9C9C4}
+.side-nav{display:flex;flex-direction:column;gap:3px;flex:1}
+.nav-item{
+  display:flex;align-items:center;gap:10px;background:none;border:none;color:#D7DFCF;
+  font-family:'Tajawal';font-size:13.5px;text-align:right;padding:10px 12px;border-radius:9px;cursor:pointer;
+}
+.nav-item:hover{background:rgba(255,255,255,.06)}
+.nav-item.active{background:var(--gold);color:#23200f;font-weight:700}
+.nav-icon{font-size:15px}
+.side-user{border-top:1px solid rgba(255,255,255,.12);padding-top:14px;margin-top:10px;display:flex;flex-direction:column;gap:6px}
+.side-user-role{font-size:13px;font-weight:600}
+
+.main{flex:1;padding:26px 30px;max-width:1180px}
+
+.page-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;gap:16px;flex-wrap:wrap}
+.page-actions{display:flex;gap:8px;flex-wrap:wrap}
+.section-title{font-family:'Cairo';font-weight:700;color:var(--ink);margin:22px 0 10px;font-size:14.5px}
+
+/* ---------- Cards / KPIs ---------- */
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:18px}
+.card-title{font-family:'Cairo';font-weight:700;color:var(--ink);margin-bottom:12px;font-size:14px}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-bottom:8px}
+.kpi{
+  background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px 18px;
+  display:flex;align-items:center;gap:14px;border-inline-start:4px solid var(--ink-2);
+}
+.kpi-icon{font-size:22px}
+.kpi-value{font-family:'IBM Plex Mono';font-weight:600;font-size:19px;color:var(--ink)}
+.kpi-label{font-size:12px;color:var(--muted);margin-top:2px}
+.kpi-danger{border-inline-start-color:var(--danger)}
+.kpi-success{border-inline-start-color:var(--success)}
+.kpi-gold{border-inline-start-color:var(--gold)}
+.kpi-info{border-inline-start-color:var(--info)}
+.kpi-ink{border-inline-start-color:var(--ink-2)}
+
+.quick-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:10px}
+.quick-btn{
+  background:var(--card);border:1.5px dashed var(--border);border-radius:12px;padding:16px;
+  display:flex;flex-direction:column;align-items:center;gap:8px;font-family:'Cairo';font-weight:700;
+  font-size:13px;color:var(--ink);cursor:pointer;
+}
+.quick-btn span{font-size:22px}
+.quick-btn:hover{border-color:var(--gold);background:#FCFAF2}
+
+.mini-list{margin:0;padding-inline-start:18px;line-height:2.1}
+
+/* ---------- Tables ---------- */
+.table-wrap{overflow-x:auto}
+.tbl{width:100%;border-collapse:collapse;font-size:13.5px}
+.tbl th{
+  text-align:right;color:var(--muted);font-weight:600;font-size:11.5px;
+  text-transform:uppercase;letter-spacing:.03em;padding:10px 12px;border-bottom:2px solid var(--border);
+}
+.tbl td{padding:11px 12px;border-bottom:1px solid var(--border);vertical-align:middle}
+.tbl tr:last-child td{border-bottom:none}
+.tbl .sub{font-size:11px;color:var(--muted)}
+.tbl .empty{text-align:center;color:var(--muted);padding:26px}
+.row-warn td{background:#FBF1E8}
+
+.badge{display:inline-block;padding:4px 11px;border-radius:100px;font-size:11.5px;font-weight:700;font-family:'Cairo'}
+.badge-gold{background:#F4E4C1;color:#7A5A16}
+.badge-success{background:#DCEEE0;color:#245C38}
+.badge-danger{background:#F5DEDA;color:#8C2E24}
+.badge-info{background:#DAE9EF;color:#1D4E63}
+.badge-muted{background:#EAE5D6;color:#6B644F}
+
+/* ---------- Modal ---------- */
+.modal-back{
+  position:fixed;inset:0;background:rgba(22,20,15,.45);
+  display:flex;align-items:center;justify-content:center;z-index:50;padding:20px;
+}
+.modal{background:var(--card);border-radius:16px;width:100%;max-width:560px;max-height:90vh;overflow:auto;box-shadow:0 30px 70px -20px rgba(0,0,0,.4)}
+.modal-sm{max-width:400px}
+.modal-head{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;border-bottom:1px solid var(--border)}
+.modal-body{padding:18px 20px}
+.modal-foot{display:flex;justify-content:flex-end;gap:10px;padding:16px 20px;border-top:1px solid var(--border)}
+.modal-foot.no-border{border-top:none;padding-top:6px}
+
+/* ---------- Invoice form ---------- */
+.invoice-form .add-item-row{
+  display:grid;grid-template-columns:2fr 1fr 1fr auto auto;gap:8px;align-items:end;
+  background:#FBF8F0;border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:14px;
+}
+.form-tail{margin-top:16px;align-items:start}
+.totals-box{background:#FBF8F0;border:1px solid var(--border);border-radius:12px;padding:16px}
+.totals-line{display:flex;justify-content:space-between;padding:6px 0;font-size:13.5px}
+.totals-line.grand{border-top:1.5px dashed var(--border);margin-top:6px;padding-top:10px;font-family:'Cairo';font-weight:800;color:var(--ink);font-size:16px}
+.pad{padding:16px 4px}
+
+/* ---------- Receipt / invoice preview (the signature element) ---------- */
+.receipt-wrap{display:flex;justify-content:center}
+.receipt{
+  position:relative;background:#FFFEFA;width:100%;max-width:430px;padding:30px 26px 20px;
+  border:1px solid var(--border);
+  box-shadow:0 16px 40px -18px rgba(22,66,60,.35);
+  background-image:
+    linear-gradient(90deg, transparent 24px, rgba(0,0,0,.02) 24px, rgba(0,0,0,.02) 25px, transparent 25px),
+    linear-gradient(90deg, transparent calc(100% - 25px), rgba(0,0,0,.02) calc(100% - 25px), rgba(0,0,0,.02) calc(100% - 24px), transparent calc(100% - 24px));
+  clip-path: polygon(0 0,100% 0,100% 100%,96% 97%,92% 100%,88% 97%,84% 100%,80% 97%,76% 100%,72% 97%,68% 100%,64% 97%,60% 100%,56% 97%,52% 100%,48% 97%,44% 100%,40% 97%,36% 100%,32% 97%,28% 100%,24% 97%,20% 100%,16% 97%,12% 100%,8% 97%,4% 100%,0 97%);
+  padding-bottom:34px;
+}
+.receipt-shop{font-family:'Cairo';font-weight:800;font-size:18px;text-align:center;color:var(--ink)}
+.receipt-type{text-align:center;font-size:12px;color:var(--muted);margin-bottom:14px;letter-spacing:.04em}
+.receipt-meta{font-size:13px;display:flex;flex-direction:column;gap:4px;margin-bottom:10px}
+.receipt-meta span{color:var(--muted)}
+.receipt-dash{border-top:1.5px dashed #C9C2AC;margin:12px 0}
+.receipt-tbl{width:100%;border-collapse:collapse;font-size:12.5px}
+.receipt-tbl th{text-align:right;color:var(--muted);font-weight:600;padding:4px 2px;font-size:11px}
+.receipt-tbl td{padding:6px 2px;font-family:'IBM Plex Mono';font-size:12.5px}
+.receipt-tbl td:first-child{font-family:'Tajawal';font-size:13px}
+.receipt-totals div{display:flex;justify-content:space-between;padding:3px 0;font-size:13px}
+.receipt-totals .grand{font-family:'Cairo';font-weight:800;font-size:16px;color:var(--ink);border-top:1.5px dashed #C9C2AC;margin-top:6px;padding-top:8px}
+.receipt-notes{margin-top:12px;font-size:12px;color:var(--muted);background:#F5F1E4;border-radius:8px;padding:8px 10px}
+.receipt-footer{text-align:center;margin-top:18px;font-size:12px;color:var(--muted)}
+.stamp{
+  position:absolute;top:20px;left:20px;
+  border:3px double currentColor;border-radius:50%;
+  width:76px;height:76px;display:flex;align-items:center;justify-content:center;
+  transform:rotate(-14deg);font-family:'Cairo';font-weight:800;font-size:11px;text-align:center;
+  padding:6px;opacity:.85;
+}
+.stamp-gold{color:var(--gold-dark)}
+.stamp-success{color:var(--success)}
+.stamp-danger{color:var(--danger)}
+.stamp-info{color:var(--info)}
+.stamp-muted{color:var(--muted)}
+
+/* ---------- Toast ---------- */
+.toast{
+  position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);
+  background:var(--ink);color:#fff;padding:12px 22px;border-radius:100px;font-size:13.5px;
+  font-family:'Cairo';font-weight:600;opacity:0;pointer-events:none;transition:.25s;z-index:100;
+  box-shadow:0 10px 30px -10px rgba(0,0,0,.4);
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.danger{background:var(--danger)}
+
+.boot-loader{display:flex;align-items:center;justify-content:center;height:100vh;font-family:'Cairo';font-size:15px;color:var(--ink)}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 880px){
+  .shell{flex-direction:column}
+  .sidebar{width:100%;flex:none;flex-direction:row;flex-wrap:wrap;padding:12px}
+  .side-brand{border-bottom:none;padding-bottom:0;margin-bottom:0;flex:1 1 100%}
+  .side-nav{flex-direction:row;flex-wrap:wrap}
+  .nav-item{padding:8px 10px}
+  .side-user{border-top:none;flex-direction:row;align-items:center;justify-content:space-between;flex:1 1 100%}
+  .main{padding:18px}
+  .two-col{grid-template-columns:1fr}
+  .grid2,.grid3{grid-template-columns:1fr}
+  .invoice-form .add-item-row{grid-template-columns:1fr 1fr;grid-auto-rows:auto}
+}
+
+/* ---------- Print ---------- */
+@media print{
+  .sidebar,.page-head .btn,.page-actions{display:none !important}
+  .main{padding:0;max-width:none}
+  body{background:#fff}
+  .receipt{box-shadow:none;border:none}
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="modal-root"></div>
+<div id="toast" class="toast"></div>
+<script src="https://cdn.jsdelivr.net/npm/appwrite@16.0.2"></script>
+<script>
+/* ============ Appwrite config ============ */
+/* شرح كل قيمة تحت وين تلقاها بلوحة تحكم Appwrite بالرسالة يلي بعتلك ياها */
+const APPWRITE_ENDPOINT      = 'https://sgp.cloud.appwrite.io/v1';
+const APPWRITE_PROJECT_ID    = '6a5692d6002e3a9ae59d';
+const APPWRITE_DATABASE_ID   = 'accounting_db';   // لازم تنشئيها بهاد الاسم بالضبط (أو تغيّري القيمة هون لتطابق يلي عملتيه)
+const APPWRITE_COLLECTION_ID = 'kv_store';        // نفس الشي، لازم تطابق اسم الـ Collection
+
+const { Client, Databases } = Appwrite;
+const appwriteClient = new Client().setEndpoint(APPWRITE_ENDPOINT).setProject(APPWRITE_PROJECT_ID);
+const databases = new Databases(appwriteClient);
+
+/* ============ Storage helpers ============ */
+/* البيانات المشتركة (فواتير، أصناف، عملاء...) بتتخزن بقاعدة بيانات Appwrite */
+/* حالة تسجيل الدخول (مين مسجل دخول بهالجهاز) بتضل محلية بكل متصفح/جهاز لحاله عشان كل موظفة تسجل دخولها بشكل منفصل */
+const LOCAL_ONLY_KEYS = ['loggedUser'];
+
+let appwriteConfigError = null; // بيتعبى لو صار خطأ حقيقي بالاتصال أو بأسماء الـ Database/Collection
+
+async function loadKey(key, fallback) {
+  if (LOCAL_ONLY_KEYS.includes(key)) {
+    try {
+      const raw = localStorage.getItem(key);
+      return raw ? JSON.parse(raw) : fallback;
+    } catch (e) { return fallback; }
+  }
+  try {
+    const doc = await databases.getDocument(APPWRITE_DATABASE_ID, APPWRITE_COLLECTION_ID, key);
+    return JSON.parse(doc.value);
+  } catch (e) {
+    if (e && e.code === 404) return fallback; // طبيعي أول مرة، لسا ما في بيانات محفوظة
+    console.error('Appwrite load error for key', key, e);
+    appwriteConfigError = (e && e.message) || 'تعذر الاتصال بقاعدة البيانات';
+    return fallback;
+  }
+}
+async function saveKey(key, value) {
+  if (LOCAL_ONLY_KEYS.includes(key)) {
+    try { localStorage.setItem(key, JSON.stringify(value)); }
+    catch (e) { console.error('local save failed', key, e); }
+    return;
+  }
+  const payload = { key: key, value: JSON.stringify(value) };
+  try {
+    await databases.updateDocument(APPWRITE_DATABASE_ID, APPWRITE_COLLECTION_ID, key, payload);
+  } catch (e) {
+    try {
+      await databases.createDocument(APPWRITE_DATABASE_ID, APPWRITE_COLLECTION_ID, key, payload);
+    } catch (e2) {
+      console.error('save failed', key, e2);
+      toast('صار خطأ بالحفظ، تأكدي من الاتصال بالانترنت وجربي مرة ثانية', 'danger');
+    }
+  }
+}
+async function clearLocalKey(key) {
+  try { localStorage.removeItem(key); } catch (e) {}
+}
+
+/* ============ Global state ============ */
+let DB = { settings: null, products: [], customers: [], suppliers: [], sales: [], purchases: [], pos: [], quotes: [] };
+let currentUser = null; // { role: 'owner' | 'employee' }
+let route = 'boot';
+let routeParam = null;
+let draft = null; // working draft for the invoice/quote form currently open
+
+function uid() { return 'id_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+function esc(s) { return (s === undefined || s === null) ? '' : String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+function money(n) { return (Number(n) || 0).toFixed(2); }
+function cur() { return (DB.settings && DB.settings.currency) || 'د.أ'; }
+function today() { return new Date().toISOString().slice(0, 10); }
+function todayLabel() {
+  return new Date().toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' });
+}
+
+function toast(msg, kind) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'toast show ' + (kind || 'success');
+  clearTimeout(window.__toastTimer);
+  window.__toastTimer = setTimeout(() => { el.className = 'toast'; }, 2600);
+}
+
+function brandMark(sizeClass) {
+  if (DB.settings && DB.settings.logo) {
+    return `<img src="${DB.settings.logo}" class="brand-logo ${sizeClass || ''}" alt="شعار المحل">`;
+  }
+  return `<div class="brand-mark ${sizeClass || ''}">📒</div>`;
+}
+
+function resizeImageFile(file, maxW, cb) {
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const img = new Image();
+    img.onload = () => {
+      const scale = Math.min(1, maxW / img.width);
+      const w = Math.round(img.width * scale), h = Math.round(img.height * scale);
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      cb(canvas.toDataURL('image/png', 0.9));
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+/* ============ Boot ============ */
+
+async function boot() {
+  DB.settings = await loadKey('app_settings', null);
+  DB.products = await loadKey('products', []);
+  DB.customers = await loadKey('customers', []);
+  DB.suppliers = await loadKey('suppliers', []);
+  DB.sales = await loadKey('sales_invoices', []);
+  DB.purchases = await loadKey('purchase_invoices', []);
+  DB.pos = await loadKey('purchase_orders', []);
+  DB.quotes = await loadKey('quotes', []);
+
+  const loggedUser = await loadKey("loggedUser", null);
+
+  if (!DB.settings || !DB.settings.setupDone) {
+    route = 'setup';
+  } else if (loggedUser) {
+    currentUser = loggedUser;
+    route = 'dashboard';
+  } else {
+    route = 'login';
+  }
+
+  render();
+
+  if (appwriteConfigError) {
+    toast('⚠️ في مشكلة بالاتصال بقاعدة البيانات: ' + appwriteConfigError, 'danger');
+  }
+}
+/* ============ Navigation ============ */
+function navigate(r, param) {
+  if (!r.startsWith('form_')) draft = null;
+  route = r; routeParam = param || null;
+  render();
+  const main = document.getElementById('main');
+  if (main) main.scrollTop = 0;
+}
+
+function logout() { currentUser = null; clearLocalKey('loggedUser'); navigate('login'); }
+
+/* ============ Setup (first run) ============ */
+function viewSetup() {
+  return `
+  <div class="auth-wrap">
+    <div class="auth-card">
+      ${brandMark('lg')}
+      <h1>أهلاً فيك!</h1>
+      <p class="muted">خلينا نجهز البرنامج المحاسبي لمحلك بدقيقتين</p>
+      <div class="field"><label>اسم المحل / الشركة</label><input id="s_shop" placeholder="مثال: محل الأمانة للتجارة"></div>
+      <div class="field"><label>شعار المحل (اختياري)</label><input id="s_logo" type="file" accept="image/*" onchange="onSetupLogoPick(this)"></div>
+      <div class="field"><label>العملة</label><input id="s_cur" value="د.أ"></div>
+      <div class="grid2">
+        <div class="field"><label>الرقم السري لصاحب المحل</label><input id="s_pin1" type="password" placeholder="4 أرقام مثلاً"></div>
+        <div class="field"><label>الرقم السري للموظفة</label><input id="s_pin2" type="password" placeholder="4 أرقام مثلاً"></div>
+      </div>
+      <p class="hint">⚠️ ملاحظة: البيانات محفوظة بمكان مشترك يقدر يوصله أي حدا معه رابط هالبرنامج، والأرقام السرية هي بس لتمييز صاحب المحل عن الموظفة مش حماية كاملة.</p>
+      <button class="btn btn-primary btn-block" onclick="finishSetup()">ابدأ الاستخدام</button>
+    </div>
+  </div>`;
+}
+
+let __setupLogo = null;
+function onSetupLogoPick(input) {
+  if (!input.files || !input.files[0]) return;
+  resizeImageFile(input.files[0], 320, (dataUrl) => { __setupLogo = dataUrl; toast('تم اختيار الشعار'); });
+}
+
+async function finishSetup() {
+  const shop = document.getElementById('s_shop').value.trim() || 'محلي';
+  const currency = document.getElementById('s_cur').value.trim() || 'د.أ';
+  const pin1 = document.getElementById('s_pin1').value.trim() || '1111';
+  const pin2 = document.getElementById('s_pin2').value.trim() || '2222';
+  DB.settings = {
+    shopName: shop, currency, taxEnabled: false, taxRate: 0,
+    ownerPin: pin1, employeePin: pin2, setupDone: true, logo: __setupLogo || null,
+    counters: { sale: 1, purchase: 1, po: 1, quote: 1 }
+  };
+  await saveKey('app_settings', DB.settings);
+  navigate('login');
+}
+
+/* ============ Login ============ */
+function viewLogin() {
+  return `
+  <div class="auth-wrap">
+    <div class="auth-card">
+      ${brandMark('lg')}
+      <h1>${esc(DB.settings.shopName)}</h1>
+      <p class="muted">اختار المستخدم وادخل الرقم السري</p>
+      <div class="role-pick">
+        <button class="role-btn ${routeParam === 'owner' ? 'active' : ''}" onclick="navigate('login','owner')">👑 صاحب المحل</button>
+        <button class="role-btn ${routeParam === 'employee' ? 'active' : ''}" onclick="navigate('login','employee')">🧑‍💼 الموظفة</button>
+      </div>
+      ${routeParam ? `
+      <div class="field"><label>الرقم السري</label><input id="pin_in" type="password" onkeydown="if(event.key==='Enter')doLogin()"></div>
+      <button class="btn btn-primary btn-block" onclick="doLogin()">دخول</button>
+      ` : ''}
+    </div>
+  </div>`;
+}
+
+async function doLogin() {
+    const pin = document.getElementById('pin_in').value.trim();
+
+    if (routeParam === 'owner' && pin === DB.settings.ownerPin) {
+        currentUser = { role: 'owner' };
+        await saveKey("loggedUser", { role: "owner" });
+        navigate('dashboard');
+        return;
+    }
+
+    if (routeParam === 'employee' && pin === DB.settings.employeePin) {
+        currentUser = { role: 'employee' };
+        await saveKey("loggedUser", { role: "employee" });
+        navigate('dashboard');
+        return;
+    }
+
+    toast('الرقم السري غير صحيح', 'danger');
+}
+/* ============ Shell / Layout ============ */
+const NAV = [
+  ['dashboard', 'لوحة التحكم', '📊'],
+  ['sales', 'فواتير البيع', '🧾'],
+  ['purchases', 'فواتير الشراء', '📥'],
+  ['pos', 'طلبات الشراء', '📝'],
+  ['quotes', 'عروض الأسعار', '💬'],
+  ['products', 'الأصناف والمخزون', '📦'],
+  ['customers', 'العملاء', '👤'],
+  ['suppliers', 'الموردين', '🚚'],
+];
+
+function shell(inner) {
+  const isOwner = currentUser.role === 'owner';
+  let items = NAV.slice();
+  if (isOwner) items.push(['reports', 'التقارير والأرباح', '📈']);
+  items.push(['settings', 'الإعدادات', '⚙️']);
+  const navHtml = items.map(([r, label, icon]) => `
+    <button class="nav-item ${route === r ? 'active' : ''}" onclick="navigate('${r}')">
+      <span class="nav-icon">${icon}</span><span>${label}</span>
+    </button>`).join('');
+  return `
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="side-brand">
+        <div class="side-brand-mark">${DB.settings.logo ? `<img src="${DB.settings.logo}" class="brand-logo sm" alt="">` : '📒'}</div>
+        <div>
+          <div class="side-brand-name">${esc(DB.settings.shopName)}</div>
+          <div class="side-brand-sub">دفتر الحسابات</div>
+        </div>
+      </div>
+      <nav class="side-nav">${navHtml}</nav>
+      <div class="side-user">
+        <div class="side-user-role">${isOwner ? '👑 صاحب المحل' : '🧑‍💼 الموظفة'}</div>
+        <button class="btn-link" onclick="logout()">تسجيل خروج</button>
+      </div>
+    </aside>
+    <main class="main" id="main">${inner}</main>
+  </div>`;
+}
+
+function pageHeader(title, sub, actionsHtml) {
+  return `<div class="page-head">
+    <div><h2>${title}</h2>${sub ? `<p class="muted">${sub}</p>` : ''}</div>
+    <div class="page-actions">${actionsHtml || ''}</div>
+  </div>`;
+}
+
+/* ============ Dashboard ============ */
+function viewDashboard() {
+  const isOwner = currentUser.role === 'owner';
+  const t = today();
+  const salesToday = DB.sales.filter(s => s.date === t);
+  const salesTodayTotal = salesToday.reduce((a, s) => a + s.total, 0);
+  const monthPrefix = t.slice(0, 7);
+  const salesMonth = DB.sales.filter(s => s.date.slice(0, 7) === monthPrefix);
+  const purchMonth = DB.purchases.filter(p => p.date.slice(0, 7) === monthPrefix);
+  const profitMonth = salesMonth.reduce((a, s) => a + s.items.reduce((b, it) => b + (it.price - (it.cost || 0)) * it.qty, 0), 0);
+  const lowStock = DB.products.filter(p => Number(p.qty) <= Number(p.reorderLevel || 0));
+  const pendingPOs = DB.pos.filter(p => p.status === 'pending').length;
+  const openQuotes = DB.quotes.filter(q => q.status === 'draft' || q.status === 'sent').length;
+
+  const cards = [
+    { label: 'مبيعات اليوم', value: money(salesTodayTotal) + ' ' + cur(), icon: '🧾', tone: 'ink' },
+    { label: 'عدد فواتير البيع هالشهر', value: salesMonth.length, icon: '📄', tone: 'info' },
+    { label: 'أصناف وصلت حد الطلب', value: lowStock.length, icon: '📦', tone: lowStock.length ? 'danger' : 'success' },
+  ];
+  if (isOwner) cards.push({ label: 'أرباح الشهر (تقديري)', value: money(profitMonth) + ' ' + cur(), icon: '📈', tone: 'gold' });
+
+  const cardsHtml = cards.map(c => `
+    <div class="kpi kpi-${c.tone}">
+      <div class="kpi-icon">${c.icon}</div>
+      <div><div class="kpi-value">${c.value}</div><div class="kpi-label">${c.label}</div></div>
+    </div>`).join('');
+
+  const quickLinks = `
+    <div class="quick-grid">
+      <button class="quick-btn" onclick="openInvoiceForm('sale')"><span>🧾</span>فاتورة بيع جديدة</button>
+      <button class="quick-btn" onclick="openInvoiceForm('purchase')"><span>📥</span>فاتورة شراء جديدة</button>
+      <button class="quick-btn" onclick="openInvoiceForm('po')"><span>📝</span>طلب شراء جديد</button>
+      <button class="quick-btn" onclick="openInvoiceForm('quote')"><span>💬</span>عرض سعر جديد</button>
+    </div>`;
+
+  const lowStockRows = lowStock.slice(0, 6).map(p => `
+    <tr><td>${esc(p.name)}</td><td class="mono">${money(p.qty)}</td><td class="mono">${money(p.reorderLevel || 0)}</td></tr>`).join('');
+
+  return shell(`
+    ${pageHeader('لوحة التحكم', todayLabel())}
+    <div class="kpi-row">${cardsHtml}</div>
+    <div class="section-title">إجراءات سريعة</div>
+    ${quickLinks}
+    <div class="two-col">
+      <div class="card">
+        <div class="card-title">📦 أصناف بحاجة لإعادة طلب</div>
+        ${lowStock.length ? table(['الصنف', 'الكمية الحالية', 'حد الطلب'], [lowStockRows]) : `<p class="muted pad">كل الأصناف بكمية مريحة 👍</p>`}
+      </div>
+      <div class="card">
+        <div class="card-title">🔔 بانتظارك</div>
+        <ul class="mini-list">
+          <li>طلبات شراء لسا معلقة: <b>${pendingPOs}</b></li>
+          <li>عروض أسعار مفتوحة: <b>${openQuotes}</b></li>
+        </ul>
+      </div>
+    </div>
+  `);
+}
+
+function table(headers, rowsHtmlArray) {
+  return `<div class="table-wrap"><table class="tbl"><thead><tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr></thead><tbody>${rowsHtmlArray.join('') || `<tr><td colspan="${headers.length}" class="empty">ولا شي هون لسا</td></tr>`}</tbody></table></div>`;
+}
+
+/* ============ Products ============ */
+function viewProducts() {
+  const isOwner = currentUser.role === 'owner';
+  const rows = DB.products.map(p => {
+    const low = Number(p.qty) <= Number(p.reorderLevel || 0);
+    return `<tr class="${low ? 'row-warn' : ''}">
+      <td>${esc(p.name)}<div class="sub">${esc(p.sku || '')}</div></td>
+      <td>${esc(p.category || '-')}</td>
+      <td class="mono">${money(p.qty)} ${esc(p.unit || '')}</td>
+      ${isOwner ? `<td class="mono">${money(p.costPrice)} ${cur()}</td>` : ''}
+      <td class="mono">${money(p.salePrice)} ${cur()}</td>
+      <td>
+        <button class="btn-icon" onclick="openProductForm('${p.id}')" title="تعديل">✏️</button>
+        ${isOwner ? `<button class="btn-icon danger" onclick="deleteRecord('products','${p.id}')" title="حذف">🗑️</button>` : ''}
+      </td>
+    </tr>`;
+  });
+  const headers = isOwner
+    ? ['الصنف', 'التصنيف', 'الكمية', 'سعر التكلفة', 'سعر البيع', '']
+    : ['الصنف', 'التصنيف', 'الكمية', 'سعر البيع', ''];
+  return shell(`
+    ${pageHeader('الأصناف والمخزون', `${DB.products.length} صنف مسجل`, `<button class="btn btn-primary" onclick="openProductForm()">+ صنف جديد</button>`)}
+    <div class="card">${table(headers, rows)}</div>
+  `);
+}
+
+function openProductForm(id) {
+  const p = id ? DB.products.find(x => x.id === id) : null;
+  document.getElementById('modal-root').innerHTML = `
+  <div class="modal-back" onclick="if(event.target===this)closeModal()">
+    <div class="modal">
+      <div class="modal-head"><h3>${p ? 'تعديل صنف' : 'صنف جديد'}</h3><button class="btn-icon" onclick="closeModal()">✖</button></div>
+      <div class="modal-body">
+        <div class="grid2">
+          <div class="field"><label>اسم الصنف</label><input id="p_name" value="${esc(p ? p.name : '')}"></div>
+          <div class="field"><label>رمز الصنف (SKU)</label><input id="p_sku" value="${esc(p ? p.sku : '')}"></div>
+        </div>
+        <div class="grid2">
+          <div class="field"><label>التصنيف</label><input id="p_cat" value="${esc(p ? p.category : '')}"></div>
+          <div class="field"><label>وحدة القياس</label><input id="p_unit" placeholder="حبة / كرتون / كيلو" value="${esc(p ? p.unit : '')}"></div>
+        </div>
+        <div class="grid3">
+          <div class="field"><label>الكمية الحالية</label><input id="p_qty" type="number" step="any" value="${p ? p.qty : 0}"></div>
+          <div class="field"><label>سعر التكلفة</label><input id="p_cost" type="number" step="any" value="${p ? p.costPrice : 0}"></div>
+          <div class="field"><label>سعر البيع</label><input id="p_price" type="number" step="any" value="${p ? p.salePrice : 0}"></div>
+        </div>
+        <div class="field"><label>حد إعادة الطلب (تنبيه لما تقل الكمية عنه)</label><input id="p_reorder" type="number" step="any" value="${p ? (p.reorderLevel || 0) : 0}"></div>
+      </div>
+      <div class="modal-foot">
+        <button class="btn btn-ghost" onclick="closeModal()">إلغاء</button>
+        <button class="btn btn-primary" onclick="saveProduct(${p ? `'${p.id}'` : 'null'})">حفظ</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+async function saveProduct(id) {
+  const name = document.getElementById('p_name').value.trim();
+  if (!name) { toast('لازم تكتب اسم الصنف', 'danger'); return; }
+  const obj = {
+    id: id || uid(),
+    name,
+    sku: document.getElementById('p_sku').value.trim(),
+    category: document.getElementById('p_cat').value.trim(),
+    unit: document.getElementById('p_unit').value.trim(),
+    qty: parseFloat(document.getElementById('p_qty').value) || 0,
+    costPrice: parseFloat(document.getElementById('p_cost').value) || 0,
+    salePrice: parseFloat(document.getElementById('p_price').value) || 0,
+    reorderLevel: parseFloat(document.getElementById('p_reorder').value) || 0,
+  };
+  if (id) { DB.products = DB.products.map(p => p.id === id ? obj : p); }
+  else { DB.products.push(obj); }
+  await saveKey('products', DB.products);
+  closeModal(); toast('تم حفظ الصنف'); navigate('products');
+}
+
+/* ============ Customers & Suppliers (shared logic) ============ */
+function partyView(kind) {
+  const isCustomer = kind === 'customers';
+  const list = isCustomer ? DB.customers : DB.suppliers;
+  const title = isCustomer ? 'العملاء' : 'الموردين';
+  const rows = list.map(c => `<tr>
+    <td>${esc(c.name)}</td><td class="mono">${esc(c.phone || '-')}</td><td>${esc(c.address || '-')}</td>
+    <td>
+      <button class="btn-icon" onclick="openPartyForm('${kind}','${c.id}')" title="تعديل">✏️</button>
+      ${currentUser.role === 'owner' ? `<button class="btn-icon danger" onclick="deleteRecord('${kind}','${c.id}')" title="حذف">🗑️</button>` : ''}
+    </td></tr>`);
+  return shell(`
+    ${pageHeader(title, `${list.length} مسجل`, `<button class="btn btn-primary" onclick="openPartyForm('${kind}')">+ إضافة</button>`)}
+    <div class="card">${table(['الاسم', 'الهاتف', 'العنوان', ''], rows)}</div>
+  `);
+}
+
+function openPartyForm(kind, id) {
+  const list = kind === 'customers' ? DB.customers : DB.suppliers;
+  const c = id ? list.find(x => x.id === id) : null;
+  document.getElementById('modal-root').innerHTML = `
+  <div class="modal-back" onclick="if(event.target===this)closeModal()">
+    <div class="modal">
+      <div class="modal-head"><h3>${c ? 'تعديل' : 'إضافة'} ${kind === 'customers' ? 'عميل' : 'مورد'}</h3><button class="btn-icon" onclick="closeModal()">✖</button></div>
+      <div class="modal-body">
+        <div class="field"><label>الاسم</label><input id="c_name" value="${esc(c ? c.name : '')}"></div>
+        <div class="field"><label>رقم الهاتف</label><input id="c_phone" value="${esc(c ? c.phone : '')}"></div>
+        <div class="field"><label>العنوان</label><input id="c_addr" value="${esc(c ? c.address : '')}"></div>
+      </div>
+      <div class="modal-foot">
+        <button class="btn btn-ghost" onclick="closeModal()">إلغاء</button>
+        <button class="btn btn-primary" onclick="saveParty('${kind}',${c ? `'${c.id}'` : 'null'})">حفظ</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+async function saveParty(kind, id) {
+  const name = document.getElementById('c_name').value.trim();
+  if (!name) { toast('لازم تكتب الاسم', 'danger'); return; }
+  const obj = { id: id || uid(), name, phone: document.getElementById('c_phone').value.trim(), address: document.getElementById('c_addr').value.trim() };
+  const key = kind;
+  DB[key] = id ? DB[key].map(x => x.id === id ? obj : x) : [...DB[key], obj];
+  await saveKey(kind === 'customers' ? 'customers' : 'suppliers', DB[key]);
+  closeModal(); toast('تم الحفظ'); navigate(kind);
+}
+
+/* ============ Generic delete ============ */
+function deleteRecord(kind, id) {
+  confirmModal('متأكد إنك بدك تحذف؟ ما في رجعة', async () => {
+    const map = { products: 'products', customers: 'customers', suppliers: 'suppliers', sales: 'sales_invoices', purchases: 'purchase_invoices', pos: 'purchase_orders', quotes: 'quotes' };
+    DB[kind] = DB[kind].filter(x => x.id !== id);
+    await saveKey(map[kind], DB[kind]);
+    toast('تم الحذف'); render();
+  });
+}
+
+function closeModal() { document.getElementById('modal-root').innerHTML = ''; }
+
+/* ============ Generic confirm modal ============ */
+let __confirmCb = null;
+function confirmModal(message, onConfirm) {
+  __confirmCb = onConfirm;
+  document.getElementById('modal-root').innerHTML = `
+  <div class="modal-back" onclick="if(event.target===this)closeModal()">
+    <div class="modal modal-sm">
+      <div class="modal-body" style="padding-top:24px">
+        <p style="font-size:15px">${esc(message)}</p>
+      </div>
+      <div class="modal-foot">
+        <button class="btn btn-ghost" onclick="closeModal()">إلغاء</button>
+        <button class="btn btn-danger" onclick="runConfirm()">تأكيد</button>
+      </div>
+    </div>
+  </div>`;
+}
+function runConfirm() {
+  const cb = __confirmCb; closeModal(); __confirmCb = null;
+  if (cb) cb();
+}
+
+/* ============ Invoice / Quote / PO type configs ============ */
+const TYPE_CFG = {
+  sale: { key: 'sales', storeKey: 'sales_invoices', title: 'فاتورة بيع', partyLabel: 'العميل', partyKind: 'customers', priceField: 'salePrice', counter: 'sale', prefix: 'S', affectsStock: -1, hasStatus: false },
+  purchase: { key: 'purchases', storeKey: 'purchase_invoices', title: 'فاتورة شراء', partyLabel: 'المورد', partyKind: 'suppliers', priceField: 'costPrice', counter: 'purchase', prefix: 'P', affectsStock: 1, hasStatus: false },
+  po: { key: 'pos', storeKey: 'purchase_orders', title: 'طلب شراء', partyLabel: 'المورد', partyKind: 'suppliers', priceField: 'costPrice', counter: 'po', prefix: 'PO', affectsStock: 0, hasStatus: true },
+  quote: { key: 'quotes', storeKey: 'quotes', title: 'عرض سعر', partyLabel: 'العميل', partyKind: 'customers', priceField: 'salePrice', counter: 'quote', prefix: 'Q', affectsStock: 0, hasStatus: true },
+};
+
+function listView(type) {
+  const cfg = TYPE_CFG[type];
+  const list = DB[cfg.key].slice().sort((a, b) => b.date.localeCompare(a.date) || b.number.localeCompare(a.number));
+  const rows = list.map(inv => {
+    const statusBadge = cfg.hasStatus ? `<span class="badge badge-${statusTone(inv.status)}">${statusLabel(inv.status)}</span>` : '';
+    return `<tr>
+      <td class="mono">${esc(inv.number)}</td>
+      <td>${esc(inv.date)}</td>
+      <td>${esc(inv.partyName || '-')}</td>
+      <td class="mono">${money(inv.total)} ${cur()}</td>
+      <td>${statusBadge}</td>
+      <td>
+        <button class="btn-icon" onclick="navigate('preview',{type:'${type}',id:'${inv.id}'})" title="عرض/طباعة">🖨️</button>
+        ${cfg.key === 'pos' && inv.status === 'pending' && currentUser.role === 'owner' ? `<button class="btn-icon success" onclick="receivePO('${inv.id}')" title="استلام">📦</button>` : ''}
+        ${cfg.key === 'quotes' && (inv.status === 'draft' || inv.status === 'sent') ? `<button class="btn-icon success" onclick="acceptQuote('${inv.id}')" title="تحويل لفاتورة بيع">✅</button>` : ''}
+        ${currentUser.role === 'owner' ? `<button class="btn-icon danger" onclick="deleteRecord('${cfg.key}','${inv.id}')" title="حذف">🗑️</button>` : ''}
+      </td>
+    </tr>`;
+  });
+  const headers = ['الرقم', 'التاريخ', cfg.partyLabel, 'المجموع', cfg.hasStatus ? 'الحالة' : '', ''];
+  return shell(`
+    ${pageHeader(cfg.title + ' - القائمة', `${list.length} سجل`, `<button class="btn btn-primary" onclick="openInvoiceForm('${type}')">+ ${cfg.title} جديدة</button>`)}
+    <div class="card">${table(headers, rows)}</div>
+  `);
+}
+
+function statusLabel(s) {
+  return { pending: 'معلق', received: 'تم الاستلام', draft: 'مسودة', sent: 'مرسل', accepted: 'مقبول', rejected: 'مرفوض' }[s] || s;
+}
+function statusTone(s) {
+  return { pending: 'gold', received: 'success', draft: 'muted', sent: 'info', accepted: 'success', rejected: 'danger' }[s] || 'muted';
+}
+
+/* ============ Invoice Form (create) ============ */
+function openInvoiceForm(type, fromDraft) {
+  const cfg = TYPE_CFG[type];
+  draft = fromDraft || { type, items: [], discount: 0, notes: '', date: today() };
+  navigate('form_' + type);
+}
+
+function partyOptions(kind, selectedId) {
+  const list = kind === 'customers' ? DB.customers : DB.suppliers;
+  return `<option value="">-- اختر --</option>` + list.map(c => `<option value="${c.id}" ${selectedId === c.id ? 'selected' : ''}>${esc(c.name)}</option>`).join('');
+}
+function productOptions(selectedId) {
+  return `<option value="">-- اختر صنف --</option>` + DB.products.map(p => `<option value="${p.id}" ${selectedId === p.id ? 'selected' : ''}>${esc(p.name)} (${money(p.qty)} ${esc(p.unit || '')})</option>`).join('');
+}
+
+function viewInvoiceForm(type) {
+  const cfg = TYPE_CFG[type];
+  const isOwner = currentUser.role === 'owner';
+  const showCost = isOwner || type !== 'sale';
+  return shell(`
+    ${pageHeader(cfg.title + ' جديدة', '', `<button class="btn btn-ghost" onclick="navigate('${cfg.key}')">رجوع للقائمة</button>`)}
+    <div class="card invoice-form">
+      <div class="grid2">
+        <div class="field"><label>${cfg.partyLabel}</label>
+          <select id="f_party">${partyOptions(cfg.partyKind, null)}</select>
+        </div>
+        <div class="field"><label>التاريخ</label><input id="f_date" type="date" value="${draft.date}"></div>
+      </div>
+      <div class="section-title">الأصناف</div>
+      <div class="add-item-row">
+        <select id="ai_product">${productOptions(null)}</select>
+        <input id="ai_qty" type="number" step="any" placeholder="الكمية" value="1">
+        <input id="ai_price" type="number" step="any" placeholder="السعر">
+        <button class="btn btn-secondary" onclick="addManualLine()">صنف يدوي</button>
+        <button class="btn btn-primary" onclick="addLineFromProduct()">+ إضافة</button>
+      </div>
+      <div id="lineItemsWrap">${lineItemsTable(type)}</div>
+      <div class="grid2 form-tail">
+        <div class="field"><label>ملاحظات</label><textarea id="f_notes" rows="2">${esc(draft.notes)}</textarea></div>
+        <div class="totals-box">
+          <div class="field"><label>خصم (${cur()})</label><input id="f_discount" type="number" step="any" value="${draft.discount}" oninput="updateDiscount(this.value)"></div>
+          <div class="totals-line"><span>المجموع الفرعي</span><span class="mono">${money(lineSubtotal())} ${cur()}</span></div>
+          <div class="totals-line"><span>الخصم</span><span class="mono">- ${money(draft.discount)} ${cur()}</span></div>
+          <div class="totals-line grand"><span>الإجمالي</span><span class="mono">${money(Math.max(0, lineSubtotal() - draft.discount))} ${cur()}</span></div>
+        </div>
+      </div>
+      <div class="modal-foot no-border">
+        <button class="btn btn-ghost" onclick="navigate('${cfg.key}')">إلغاء</button>
+        <button class="btn btn-primary btn-lg" onclick="saveInvoice('${type}')">💾 حفظ ${cfg.title}</button>
+      </div>
+    </div>
+  `);
+}
+
+function lineSubtotal() {
+  return draft.items.reduce((a, it) => a + it.qty * it.price, 0);
+}
+
+function lineItemsTable(type) {
+  const showCost = currentUser.role === 'owner' || (type !== 'sale');
+  if (!draft.items.length) return `<p class="muted pad">لسا ما ضفت أصناف</p>`;
+  const rows = draft.items.map((it, idx) => `
+    <tr>
+      <td>${esc(it.name)}</td>
+      <td class="mono">${money(it.qty)} ${esc(it.unit || '')}</td>
+      <td class="mono">${money(it.price)} ${cur()}</td>
+      <td class="mono">${money(it.qty * it.price)} ${cur()}</td>
+      <td><button class="btn-icon danger" onclick="removeLine(${idx})">🗑️</button></td>
+    </tr>`).join('');
+  return table(['الصنف', 'الكمية', 'السعر', 'المجموع', ''], [rows]);
+}
+
+function addLineFromProduct() {
+  const pid = document.getElementById('ai_product').value;
+  const qty = parseFloat(document.getElementById('ai_qty').value) || 0;
+  const priceInput = document.getElementById('ai_price').value;
+  if (!pid) { toast('اختار صنف الأول', 'danger'); return; }
+  if (qty <= 0) { toast('لازم الكمية أكبر من صفر', 'danger'); return; }
+  const p = DB.products.find(x => x.id === pid);
+  const cfg = TYPE_CFG[draft.type];
+  const price = priceInput !== '' ? parseFloat(priceInput) : p[cfg.priceField];
+  draft.items.push({ productId: p.id, name: p.name, unit: p.unit, qty, price, cost: p.costPrice });
+  document.getElementById('lineItemsWrap').innerHTML = lineItemsTable(draft.type);
+  document.getElementById('ai_qty').value = 1;
+  document.getElementById('ai_price').value = '';
+  document.getElementById('ai_product').value = '';
+  refreshTotalsBox();
+}
+
+function addManualLine() {
+  document.getElementById('modal-root').innerHTML = `
+  <div class="modal-back" onclick="if(event.target===this)closeModal()">
+    <div class="modal modal-sm">
+      <div class="modal-head"><h3>صنف يدوي (غير مسجل بالمخزون)</h3><button class="btn-icon" onclick="closeModal()">✖</button></div>
+      <div class="modal-body">
+        <div class="field"><label>اسم الصنف</label><input id="ml_name" placeholder="مثال: خدمة توصيل"></div>
+        <div class="grid2">
+          <div class="field"><label>الكمية</label><input id="ml_qty" type="number" step="any" value="1"></div>
+          <div class="field"><label>السعر</label><input id="ml_price" type="number" step="any" value="0"></div>
+        </div>
+      </div>
+      <div class="modal-foot">
+        <button class="btn btn-ghost" onclick="closeModal()">إلغاء</button>
+        <button class="btn btn-primary" onclick="confirmManualLine()">إضافة للفاتورة</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function confirmManualLine() {
+  const name = document.getElementById('ml_name').value.trim();
+  const qty = parseFloat(document.getElementById('ml_qty').value) || 0;
+  const price = parseFloat(document.getElementById('ml_price').value) || 0;
+  if (!name) { toast('لازم تكتب اسم الصنف', 'danger'); return; }
+  if (qty <= 0) { toast('لازم الكمية أكبر من صفر', 'danger'); return; }
+  draft.items.push({ productId: null, name, unit: '', qty, price, cost: 0 });
+  closeModal();
+  document.getElementById('lineItemsWrap').innerHTML = lineItemsTable(draft.type);
+  refreshTotalsBox();
+}
+
+function removeLine(idx) {
+  draft.items.splice(idx, 1);
+  document.getElementById('lineItemsWrap').innerHTML = lineItemsTable(draft.type);
+  refreshTotalsBox();
+}
+
+function updateDiscount(v) {
+  draft.discount = parseFloat(v) || 0;
+  refreshTotalsBox();
+}
+
+function refreshTotalsBox() {
+  const box = document.querySelector('.totals-box');
+  if (!box) return;
+  box.innerHTML = `
+    <div class="field"><label>خصم (${cur()})</label><input id="f_discount" type="number" step="any" value="${draft.discount}" oninput="updateDiscount(this.value)"></div>
+    <div class="totals-line"><span>المجموع الفرعي</span><span class="mono">${money(lineSubtotal())} ${cur()}</span></div>
+    <div class="totals-line"><span>الخصم</span><span class="mono">- ${money(draft.discount)} ${cur()}</span></div>
+    <div class="totals-line grand"><span>الإجمالي</span><span class="mono">${money(Math.max(0, lineSubtotal() - draft.discount))} ${cur()}</span></div>`;
+}
+
+async function saveInvoice(type) {
+  const cfg = TYPE_CFG[type];
+  const partyId = document.getElementById('f_party').value;
+  const date = document.getElementById('f_date').value || today();
+  const notes = document.getElementById('f_notes').value.trim();
+  if (!partyId) { toast(`لازم تختار ${cfg.partyLabel}`, 'danger'); return; }
+  if (!draft.items.length) { toast('لازم تضيف صنف واحد ع الأقل', 'danger'); return; }
+  const partyList = cfg.partyKind === 'customers' ? DB.customers : DB.suppliers;
+  const party = partyList.find(x => x.id === partyId);
+  const subtotal = lineSubtotal();
+  const total = Math.max(0, subtotal - (draft.discount || 0));
+  const number = cfg.prefix + '-' + String(DB.settings.counters[cfg.counter]).padStart(4, '0');
+  DB.settings.counters[cfg.counter]++;
+
+  const record = {
+    id: uid(), number, date, partyId, partyName: party ? party.name : '',
+    items: draft.items, subtotal, discount: draft.discount || 0, total, notes,
+    status: cfg.hasStatus ? (type === 'po' ? 'pending' : 'draft') : undefined,
+  };
+
+  if (cfg.affectsStock !== 0) {
+    draft.items.forEach(it => {
+      if (!it.productId) return;
+      const p = DB.products.find(x => x.id === it.productId);
+      if (!p) return;
+      p.qty = (Number(p.qty) || 0) + cfg.affectsStock * it.qty;
+      if (type === 'purchase') p.costPrice = it.price;
+    });
+    await saveKey('products', DB.products);
+  }
+
+  DB[cfg.key].push(record);
+  await saveKey(cfg.storeKey, DB[cfg.key]);
+  await saveKey('app_settings', DB.settings);
+  draft = null;
+  toast('تم حفظ ' + cfg.title + ' رقم ' + number);
+  navigate(cfg.key);
+}
+
+/* ============ Receive PO / Accept Quote (conversion) ============ */
+function receivePO(id) {
+  const po = DB.pos.find(x => x.id === id);
+  if (!po || po.status !== 'pending') return;
+  confirmModal('استلام هالطلب رح يحوله لفاتورة شراء ويزيد المخزون. أكيد؟', async () => {
+    po.items.forEach(it => {
+      if (!it.productId) return;
+      const p = DB.products.find(x => x.id === it.productId);
+      if (!p) return;
+      p.qty = (Number(p.qty) || 0) + it.qty;
+      p.costPrice = it.price;
+    });
+    await saveKey('products', DB.products);
+    const number = 'P-' + String(DB.settings.counters.purchase).padStart(4, '0');
+    DB.settings.counters.purchase++;
+    const inv = { id: uid(), number, date: today(), partyId: po.partyId, partyName: po.partyName, items: po.items, subtotal: po.subtotal, discount: po.discount, total: po.total, notes: 'محول من طلب شراء ' + po.number };
+    DB.purchases.push(inv);
+    po.status = 'received'; po.linkedInvoice = number;
+    await saveKey('purchase_invoices', DB.purchases);
+    await saveKey('purchase_orders', DB.pos);
+    await saveKey('app_settings', DB.settings);
+    toast('تم الاستلام وإنشاء فاتورة شراء ' + number);
+    render();
+  });
+}
+
+function acceptQuote(id) {
+  const q = DB.quotes.find(x => x.id === id);
+  if (!q) return;
+  confirmModal('قبول العرض رح يحوله لفاتورة بيع وينقص المخزون. أكيد؟', async () => {
+    q.items.forEach(it => {
+      if (!it.productId) return;
+      const p = DB.products.find(x => x.id === it.productId);
+      if (!p) return;
+      p.qty = (Number(p.qty) || 0) - it.qty;
+    });
+    await saveKey('products', DB.products);
+    const number = 'S-' + String(DB.settings.counters.sale).padStart(4, '0');
+    DB.settings.counters.sale++;
+    const inv = { id: uid(), number, date: today(), partyId: q.partyId, partyName: q.partyName, items: q.items, subtotal: q.subtotal, discount: q.discount, total: q.total, notes: 'محول من عرض سعر ' + q.number };
+    DB.sales.push(inv);
+    q.status = 'accepted'; q.linkedInvoice = number;
+    await saveKey('sales_invoices', DB.sales);
+    await saveKey('quotes', DB.quotes);
+    await saveKey('app_settings', DB.settings);
+    toast('تم قبول العرض وإنشاء فاتورة بيع ' + number);
+    render();
+  });
+}
+
+/* ============ Invoice Preview / Print ============ */
+function viewInvoicePreview(type, id) {
+  const cfg = TYPE_CFG[type];
+  const inv = DB[cfg.key].find(x => x.id === id);
+  if (!inv) { navigate(cfg.key); return; }
+  const rows = inv.items.map(it => `
+    <tr><td>${esc(it.name)}</td><td class="mono">${money(it.qty)}</td><td class="mono">${money(it.price)}</td><td class="mono">${money(it.qty * it.price)}</td></tr>`).join('');
+  const stamp = cfg.hasStatus ? `<div class="stamp stamp-${statusTone(inv.status)}">${statusLabel(inv.status)}</div>` : '';
+  return shell(`
+    ${pageHeader(cfg.title + ' ' + inv.number, '', `
+      <button class="btn btn-ghost" onclick="navigate('${cfg.key}')">رجوع</button>
+      <button class="btn btn-primary" onclick="window.print()">🖨️ طباعة</button>
+    `)}
+    <div class="receipt-wrap">
+      <div class="receipt">
+        ${stamp}
+        ${DB.settings.logo ? `<img src="${DB.settings.logo}" class="receipt-logo" alt="">` : ''}
+        <div class="receipt-shop">${esc(DB.settings.shopName)}</div>
+        <div class="receipt-type">${cfg.title}</div>
+        <div class="receipt-meta">
+          <div><span>رقم:</span> <b class="mono">${esc(inv.number)}</b></div>
+          <div><span>التاريخ:</span> <b>${esc(inv.date)}</b></div>
+          <div><span>${cfg.partyLabel}:</span> <b>${esc(inv.partyName || '-')}</b></div>
+        </div>
+        <div class="receipt-dash"></div>
+        <table class="receipt-tbl">
+          <thead><tr><th>الصنف</th><th>كمية</th><th>سعر</th><th>مجموع</th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+        <div class="receipt-dash"></div>
+        <div class="receipt-totals">
+          <div><span>المجموع الفرعي</span><span class="mono">${money(inv.subtotal)} ${cur()}</span></div>
+          <div><span>الخصم</span><span class="mono">${money(inv.discount)} ${cur()}</span></div>
+          <div class="grand"><span>الإجمالي</span><span class="mono">${money(inv.total)} ${cur()}</span></div>
+        </div>
+        ${inv.notes ? `<div class="receipt-notes">${esc(inv.notes)}</div>` : ''}
+        <div class="receipt-footer">شكراً إلكم 🌿</div>
+      </div>
+    </div>
+  `);
+}
+
+/* ============ Reports (owner only) ============ */
+function viewReports() {
+  routeParam = routeParam || {};
+  const from = routeParam.from || today().slice(0, 8) + '01';
+  const to = routeParam.to || today();
+  const salesInRange = DB.sales.filter(s => s.date >= from && s.date <= to);
+  const purchInRange = DB.purchases.filter(p => p.date >= from && p.date <= to);
+  const salesTotal = salesInRange.reduce((a, s) => a + s.total, 0);
+  const purchTotal = purchInRange.reduce((a, s) => a + s.total, 0);
+  const profit = salesInRange.reduce((a, s) => a + s.items.reduce((b, it) => b + (it.price - (it.cost || 0)) * it.qty, 0), 0);
+
+  const salesByProduct = {};
+  salesInRange.forEach(s => s.items.forEach(it => {
+    salesByProduct[it.name] = (salesByProduct[it.name] || 0) + it.qty;
+  }));
+  const top = Object.entries(salesByProduct).sort((a, b) => b[1] - a[1]).slice(0, 8);
+  const topRows = top.map(([name, qty]) => `<tr><td>${esc(name)}</td><td class="mono">${money(qty)}</td></tr>`);
+
+  const lowStock = DB.products.filter(p => Number(p.qty) <= Number(p.reorderLevel || 0));
+  const lowRows = lowStock.map(p => `<tr><td>${esc(p.name)}</td><td class="mono">${money(p.qty)}</td><td class="mono">${money(p.reorderLevel || 0)}</td></tr>`);
+
+  return shell(`
+    ${pageHeader('التقارير والأرباح', 'حدد فترة عشان تشوف الأرقام')}
+    <div class="card">
+      <div class="grid3">
+        <div class="field"><label>من تاريخ</label><input id="r_from" type="date" value="${from}"></div>
+        <div class="field"><label>إلى تاريخ</label><input id="r_to" type="date" value="${to}"></div>
+        <div class="field"><label>&nbsp;</label><button class="btn btn-primary btn-block" onclick="applyReportRange()">تحديث</button></div>
+      </div>
+    </div>
+    <div class="kpi-row">
+      <div class="kpi kpi-ink"><div class="kpi-icon">🧾</div><div><div class="kpi-value">${money(salesTotal)} ${cur()}</div><div class="kpi-label">إجمالي المبيعات</div></div></div>
+      <div class="kpi kpi-info"><div class="kpi-icon">📥</div><div><div class="kpi-value">${money(purchTotal)} ${cur()}</div><div class="kpi-label">إجمالي المشتريات</div></div></div>
+      <div class="kpi kpi-gold"><div class="kpi-icon">📈</div><div><div class="kpi-value">${money(profit)} ${cur()}</div><div class="kpi-label">الأرباح (تقديري)</div></div></div>
+    </div>
+    <div class="two-col">
+      <div class="card"><div class="card-title">🏆 الأكثر مبيعاً</div>${table(['الصنف', 'الكمية المباعة'], topRows)}</div>
+      <div class="card"><div class="card-title">📦 أصناف بحاجة طلب</div>${table(['الصنف', 'الكمية', 'حد الطلب'], lowRows)}</div>
+    </div>
+  `);
+}
+
+function applyReportRange() {
+  routeParam = { from: document.getElementById('r_from').value, to: document.getElementById('r_to').value };
+  render();
+}
+
+/* ============ Settings ============ */
+function viewSettings() {
+  const s = DB.settings;
+  return shell(`
+    ${pageHeader('الإعدادات', 'بيانات المحل والأرقام السرية')}
+    <div class="card" style="max-width:520px">
+      <div class="field"><label>اسم المحل</label><input id="st_shop" value="${esc(s.shopName)}"></div>
+      <div class="field">
+        <label>شعار المحل</label>
+        <div class="logo-row">
+          ${s.logo ? `<img src="${s.logo}" class="logo-preview" alt="">` : `<div class="logo-preview logo-empty">بلا شعار</div>`}
+          <div class="logo-row-btns">
+            <input id="st_logo" type="file" accept="image/*" onchange="onSettingsLogoPick(this)">
+            ${s.logo ? `<button class="btn-link" onclick="removeLogo()">حذف الشعار</button>` : ''}
+          </div>
+        </div>
+      </div>
+      <div class="field"><label>العملة</label><input id="st_cur" value="${esc(s.currency)}"></div>
+      <div class="grid2">
+        <div class="field"><label>الرقم السري لصاحب المحل</label><input id="st_pin1" value="${esc(s.ownerPin)}"></div>
+        <div class="field"><label>الرقم السري للموظفة</label><input id="st_pin2" value="${esc(s.employeePin)}"></div>
+      </div>
+      <button class="btn btn-primary" onclick="saveSettings()">حفظ التغييرات</button>
+    </div>
+    <div class="card" style="max-width:520px">
+      <div class="card-title">⚠️ ملاحظة هامة</div>
+      <p class="muted">البيانات كلها محفوظة بمكان مشترك متاح لأي حدا معه رابط هالبرنامج. لا تشارك الرابط إلا مع اللي بتثقي فيهم.</p>
+    </div>
+  `);
+}
+
+function onSettingsLogoPick(input) {
+  if (!input.files || !input.files[0]) return;
+  resizeImageFile(input.files[0], 320, async (dataUrl) => {
+    DB.settings.logo = dataUrl;
+    await saveKey('app_settings', DB.settings);
+    toast('تم حفظ الشعار');
+    render();
+  });
+}
+
+function removeLogo() {
+  confirmModal('بدك تحذفي شعار المحل؟', async () => {
+    DB.settings.logo = null;
+    await saveKey('app_settings', DB.settings);
+    toast('تم حذف الشعار');
+    render();
+  });
+}
+
+async function saveSettings() {
+  DB.settings.shopName = document.getElementById('st_shop').value.trim() || DB.settings.shopName;
+  DB.settings.currency = document.getElementById('st_cur').value.trim() || DB.settings.currency;
+  DB.settings.ownerPin = document.getElementById('st_pin1').value.trim();
+  DB.settings.employeePin = document.getElementById('st_pin2').value.trim();
+  await saveKey('app_settings', DB.settings);
+  toast('تم حفظ الإعدادات');
+  render();
+}
+
+/* ============ Router dispatch ============ */
+function render() {
+  const root = document.getElementById('app');
+  if (route === 'boot') { root.innerHTML = `<div class="boot-loader">⏳ عم نجهز البرنامج...</div>`; return; }
+  if (route === 'setup') { root.innerHTML = viewSetup(); return; }
+  if (route === 'login') { root.innerHTML = viewLogin(); return; }
+  if (!currentUser) { route = 'login'; root.innerHTML = viewLogin(); return; }
+
+  if (route === 'dashboard') { root.innerHTML = viewDashboard(); return; }
+  if (route === 'products') { root.innerHTML = viewProducts(); return; }
+  if (route === 'customers') { root.innerHTML = partyView('customers'); return; }
+  if (route === 'suppliers') { root.innerHTML = partyView('suppliers'); return; }
+  if (route === 'sales') { root.innerHTML = listView('sale'); return; }
+  if (route === 'purchases') { root.innerHTML = listView('purchase'); return; }
+  if (route === 'pos') { root.innerHTML = listView('po'); return; }
+  if (route === 'quotes') { root.innerHTML = listView('quote'); return; }
+  if (route === 'reports' && currentUser.role === 'owner') { root.innerHTML = viewReports(); return; }
+  if (route === 'settings') { root.innerHTML = viewSettings(); return; }
+  if (route === 'preview') { root.innerHTML = viewInvoicePreview(routeParam.type, routeParam.id); return; }
+  if (route.startsWith('form_')) { root.innerHTML = viewInvoiceForm(route.replace('form_', '')); return; }
+
+  root.innerHTML = viewDashboard();
+}
+
+boot();
+</script>
+</body>
+</html>
